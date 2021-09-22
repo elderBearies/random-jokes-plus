@@ -4,10 +4,50 @@ const jokes = [{ q: 'What do you call a very small valentine?', a: 'A valen-tiny
 
 // i opted to make the behavior of the endpoints identical
 // params.limit defaults to 1 anyway if there's nothing passed in through the url
-const getRandomJokeResponse = (request, response, params) => {
-  response.writeHead(200, { 'Content-Type': 'application/JSON' });
-  response.write(JSON.stringify(utils.getRandomArrItems(jokes, params.limit)));
-  response.end();
+const getRandomJokeResponse = (request, response, params, acceptedTypes) => {
+  // pull limit from params
+  let { limit } = params;
+
+  // verify number-ness of limit
+  // set to 1 if NaN
+  if (!Number.isNaN(Number(limit))) {
+    limit = Math.floor(limit);
+  } else {
+    limit = 1;
+  }
+
+  // grab jokes as determined by limit
+  const jokeSON = utils.getRandomArrItems(jokes, limit);
+
+  // empty variables for storing data
+  let jokeStr;
+  let type;
+
+  if (acceptedTypes.includes('text/xml')) {
+    type = 'text/xml';
+    if (jokeSON.length > 1) {
+      jokeStr = '<jokes>';
+      for (let i = 0; i < jokeSON.length; i += 1) {
+        jokeStr += `
+        <joke>
+          <q>${jokeSON[i].q}</q>
+          <a>${jokeSON[i].a}</a>
+        </joke>`;
+      }
+      jokeStr += '</jokes>';
+    } else {
+      jokeStr = `
+        <joke>
+          <q>${jokeSON[0].q}</q>
+          <a>${jokeSON[0].a}</a>
+        </joke>`;
+    }
+  } else {
+    type = 'application/JSON';
+    jokeStr = jokeSON.length > 1 ? JSON.stringify(jokeSON) : JSON.stringify(jokeSON[0]);
+  }
+
+  utils.sendResponse(response, 200, type, jokeStr);
 };
 
 module.exports.getRandomJokeResponse = getRandomJokeResponse;

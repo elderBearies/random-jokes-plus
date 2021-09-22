@@ -1,3 +1,9 @@
+// pull in URL module
+const url = require('url');
+
+// pull in query module
+const query = require('querystring');
+
 // given an array, grabs a random element.
 const getRandomArrItem = (arr) => {
   const index = Math.floor(Math.random() * arr.length);
@@ -18,5 +24,21 @@ const getRandomArrItems = (arr, num = 1) => {
   return randomArr;
 };
 
+// given a request, parses out the url pathname and parameters
+const parseURL = (urlStr) => {
+  const parsedUrl = url.parse(urlStr);
+  const { pathname } = parsedUrl;
+  const params = query.parse(parsedUrl.query);
+  return { params, pathname };
+};
+
+const sendResponse = (response, code, type, data) => {
+  response.writeHead(code, { 'Content-Type': type });
+  response.write(data);
+  response.end();
+};
+
 module.exports.getRandomArrItem = getRandomArrItem;
 module.exports.getRandomArrItems = getRandomArrItems;
+module.exports.parseURL = parseURL;
+module.exports.sendResponse = sendResponse;

@@ -13,6 +13,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // make a call table
 const urlStruct = {
+  '/': htmlHandler.getIndexResponse,
   '/random-joke': jsonHandler.getRandomJokeResponse,
   '/random-jokes': jsonHandler.getRandomJokeResponse,
   '/default-styles.css': htmlHandler.getCSSResponse,

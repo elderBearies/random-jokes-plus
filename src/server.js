@@ -15,6 +15,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const urlStruct = {
   '/random-joke': jsonHandler.getRandomJokeResponse,
   '/random-jokes': jsonHandler.getRandomJokeResponse,
+  '/default-styles.css': htmlHandler.getCSSResponse,
   notFound: htmlHandler.get404Response,
 };
 
@@ -28,10 +29,12 @@ const onRequest = (request, response) => {
   let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
   acceptedTypes = acceptedTypes || [];
 
+  const httpMethod = request.method;
+
   if (urlStruct[urlData.pathname]) {
-    urlStruct[urlData.pathname](request, response, urlData.params, acceptedTypes);
+    urlStruct[urlData.pathname](request, response, urlData.params, acceptedTypes, httpMethod);
   } else {
-    urlStruct.notFound(request, response);
+    urlStruct.notFound(request, response, httpMethod);
   }
 };
 

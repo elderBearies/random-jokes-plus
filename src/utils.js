@@ -4,6 +4,9 @@ const url = require('url');
 // pull in query module
 const query = require('querystring');
 
+// pull in http module
+const http = require('http');
+
 // given an array, grabs a random element.
 const getRandomArrItem = (arr) => {
   const index = Math.floor(Math.random() * arr.length);
@@ -32,9 +35,17 @@ const parseURL = (urlStr) => {
   return { params, pathname };
 };
 
-const sendResponse = (response, code, type, data) => {
-  response.writeHead(code, { 'Content-Type': type });
-  response.write(data);
+// source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
+// refactored to arrow function by ACJ
+const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
+
+const sendResponse = (response, code, type, data, httpMethod) => {
+  const headers = {
+    'Content-Type': type,
+    'Content-Length': getBinarySize(data),
+  };
+  response.writeHead(code, httpMethod === 'HEAD' ? headers : { 'Content-Type': type });
+  if (httpMethod !== 'HEAD') response.write(data);
   response.end();
 };
 

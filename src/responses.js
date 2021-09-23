@@ -4,7 +4,7 @@ const jokes = [{ q: 'What do you call a very small valentine?', a: 'A valen-tiny
 
 // i opted to make the behavior of the endpoints identical
 // params.limit defaults to 1 anyway if there's nothing passed in through the url
-const getRandomJokeResponse = (request, response, params, acceptedTypes) => {
+const getRandomJokeResponse = (request, response, params, acceptedTypes, httpMethod) => {
   // pull limit from params
   let { limit } = params;
 
@@ -47,7 +47,7 @@ const getRandomJokeResponse = (request, response, params, acceptedTypes) => {
     jokeStr = jokeSON.length > 1 ? JSON.stringify(jokeSON) : JSON.stringify(jokeSON[0]);
   }
 
-  utils.sendResponse(response, 200, type, jokeStr);
+  utils.sendResponse(response, 200, type, jokeStr, httpMethod);
 };
 
 module.exports.getRandomJokeResponse = getRandomJokeResponse;
